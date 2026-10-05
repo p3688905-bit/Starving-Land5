@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>土地挨餓 · 子不語</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/css/ma-shan-zheng@latest/chinese-simplified-400-normal.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/css/zhi-mang-xing@latest/chinese-simplified-400-normal.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/css/noto-serif-sc@latest/chinese-simplified-400-normal.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/css/noto-serif-sc@latest/chinese-simplified-600-normal.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/fontsource/css/noto-serif-sc@latest/chinese-simplified-900-normal.css">
+<style>
+:root{
+  --ink-0:#0c1310; --ink-1:#121d18; --ink-2:#1a2922; --ink-3:#22352c;
+  --paper:#ece0c4; --paper-2:#e2d3ae; --paper-edge:#c9b688; --paper-deep:#d8c79c;
+  --ink-text:#2a241b; --ink-soft:#5a4f3c;
+  --verm:#c2402f; --verm-deep:#8f2b1f; --verm-bright:#e05538;
+  --gold:#c9a15c; --gold-bright:#e6c37f; --gold-deep:#8a6a30;
+  --ghost:#74c9b4; --ghost-dim:#3f8f7d;
+  --text-light:#e9dcbc; --text-dim:#a99c7e;
+  --jade:#6fae8f; --smoke:#8a4a45;
+  --px:0; --py:0;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%}
+body{
+  font-family:'Noto Serif SC',serif;
+  color:var(--text-light);
+  background:
+    radial-gradient(1100px 760px at 72% -12%, #243830, transparent 60%),
+    radial-gradient(900px 700px at 12% 110%, #16241d, transparent 60%),
+    linear-gradient(180deg,#0c1310 0%,#101a15 46%,#0a110e 100%);
+  overflow-x:hidden;
+  min-height:100vh;
+  position:relative;
+}
+/* ---------- ambient layers ---------- */
+#ambient{position:fixed;inset:0;z-index:1;pointer-events:none}
+.bg-layer{position:fixed;inset:0;z-index:0;pointer-events:none;will-change:transform}
+.mountains{bottom:0;top:auto;height:62vh}
+.mountains svg{position:absolute;bottom:0;width:130%;left:-15%;height:100%}
+.m1{opacity:.55;transform:translateX(calc(var(--px)*-10px)) translateY(calc(var(--py)*-4px))}
+.m2{opacity:.32;transform:translateX(calc(var(--px)*-22px)) translateY(calc(var(--py)*-8px))}
+.temple{position:absolute;right:8%;bottom:30vh;width:170px;opacity:.78;
+  transform:translateX(calc(var(--px)*-14px)) translateY(calc(var(--py)*-6px))}
+.temple .lantern-dot{fill:var(--verm-bright);filter:drop-shadow(0 0 6px var(--verm-bright));animation:lanternpulse 3.4s ease-in-out infinite}
+.temple .lantern-dot.b{animation-delay:1.4s}
+@keyframes lanternpulse{0%,100%{opacity:.55}50%{opacity:1}}
+.noise{position:fixed;inset:0;pointer-events:none;opacity:.055;z-index:4;mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='170' height='170'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='170' height='170' filter='url(%23n)' opacity='0.7'/></svg>")}
+.vignette{position:fixed;inset:0;pointer-events:none;z-index:3;
+  background:radial-gradient(120% 90% at 50% 42%, transparent 50%, rgba(0,0,0,.55) 100%)}
+
+/* ---------- screens ---------- */
+.screen{position:relative;z-index:5;display:none;min-height:100vh}
+.screen.active{display:block;animation:fadeScreen .7s ease both}
+@keyframes fadeScreen{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+
+/* ---------- title ---------- */
+.lantern{position:absolute;top:0;width:46px;transform-origin:top center;animation:sway 5.4s ease-in-out infinite;z-index:6}
+.lantern.r{animation-delay:-2.2s}
+.lantern .string{width:2px;height:30px;background:#8a6a3a;margin:0 auto}
+.lantern .body{width:46px;height:58px;border-radius:50%/46%;position:relative;
+  background:radial-gradient(circle at 50% 34%, #ffb072, #d84a2e 55%, #8f2b1f);
+  box-shadow:0 0 26px rgba(224,85,56,.5), inset 0 -10px 16px rgba(0,0,0,.4);
+  animation:glowp 3s ease-in-out infinite}
+.lantern .body::before,.lantern .body::after{content:"";position:absolute;left:50%;transform:translateX(-50%);width:22px;height:7px;background:linear-gradient(#e6c37f,#8a6a30);border-radius:3px}
+.lantern .body::before{top:-5px}
+.lantern .body::after{bottom:-5px}
+.lantern .tassel{width:2px;height:20px;background:#c9a15c;margin:0 auto;position:relative}
+.lantern .tassel::after{content:"";position:absolute;bottom:-7px;left:50%;transform:translateX(-50%);width:9px;height:9px;border-radius:50%;background:#c9a15c}
+@keyframes sway{0%,100%{transform:rotate(3.5deg)}50%{transform:rotate(-3.5deg)}}
+@keyframes glowp{0%,100%{filter:brightness(1)}50%{filter:brightness(1.18)}}
+
+#screen-title{padding:42px clamp(18px,5vw,72px) 60px;max-width:1320px;margin:0 auto}
+.title-top{text-align:center;position:relative;margin-bottom:30px}
+.mini-plaque{display:inline-block;font-family:'Noto Serif SC';font-weight:600;letter-spacing:.5em;
+  color:var(--gold-bright);font-size:13px;padding:7px 22px;border:1px solid rgba(201,161,92,.4);
+  border-radius:2px;background:rgba(20,30,25,.5);text-indent:.5em}
+.big-title{font-family:'Ma Shan Zheng',cursive;font-size:clamp(3.6rem,9.5vw,7.6rem);
+  line-height:1;color:var(--paper);letter-spacing:.06em;margin:14px 0 6px;position:relative;display:inline-block;
+  text-shadow:0 4px 30px rgba(0,0,0,.6), 0 0 2px rgba(230,195,127,.3)}
+.big-title .seal-stamp{position:absolute;right:-58px;top:6px;width:62px;height:62px;border:3px solid var(--verm);
+  color:var(--verm);font-family:'Noto Serif SC';font-weight:900;font-size:14px;line-height:1.05;
+  display:grid;place-items:center;border-radius:7px;transform:rotate(-7deg);writing-mode:vertical-rl;
+  background:rgba(194,64,47,.07);box-shadow:inset 0 0 0 2px rgba(194,64,47,.3)}
+.title-sub{color:var(--text-dim);font-size:clamp(13px,1.6vw,16px);letter-spacing:.18em}
+
+.title-main{display:grid;grid-template-columns:1fr 360px;gap:34px;align-items:stretch}
+.story-scroll{position:relative;background:linear-gradient(180deg,var(--paper),var(--paper-2));
+  border:1px solid var(--paper-edge);border-radius:4px;padding:26px 30px;
+  box-shadow:0 24px 60px rgba(0,0,0,.5), inset 0 0 60px rgba(120,90,40,.12)}
+.story-scroll::before{content:"卷首 · 原文";position:absolute;top:10px;left:18px;font-size:11px;
+  letter-spacing:.3em;color:var(--verm-deep);font-weight:600}
+.story-scroll::after{content:"⇠ 自右向左展卷";position:absolute;bottom:8px;left:18px;font-size:10px;
+  color:var(--ink-soft);letter-spacing:.2em;opacity:.6}
+.story-inner{writing-mode:vertical-rl;text-orientation:upright;height:min(56vh,540px);
+  margin-top:22px;overflow-x:auto;overflow-y:hidden;color:var(--ink-text);font-size:15.5px;
+  line-height:2.05;letter-spacing:.05em;padding-bottom:14px;
+  background-image:repeating-linear-gradient(90deg,transparent 0 33px,rgba(140,110,60,.12) 33px 34px)}
+.story-inner::-webkit-scrollbar{height:7px}
+.story-inner::-webkit-scrollbar-thumb{background:rgba(143,43,31,.4);border-radius:4px}
+.story-inner::-webkit-scrollbar-track{background:rgba(140,110,60,.12)}
+
+.title-side{display:flex;flex-direction:column;gap:18px}
+.hanging{position:relative;padding:14px 14px 16px;border-radius:3px;
+  background:repeating-linear-gradient(45deg,#243b33 0 7px,#1b2f27 7px 14px);
+  box-shadow:0 18px 40px rgba(0,0,0,.5)}
+.hanging .rod{height:13px;background:linear-gradient(#7a5630,#3a2817);border-radius:7px;position:relative;
+  box-shadow:0 2px 6px rgba(0,0,0,.4)}
+.hanging .rod::before,.hanging .rod::after{content:"";position:absolute;top:50%;transform:translateY(-50%);
+  width:14px;height:14px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#e6c37f,#8a6a30)}
+.hanging .rod::before{left:-7px}.hanging .rod::after{right:-7px}
+.hanging figure{margin:9px 0;overflow:hidden;border:2px solid var(--gold-deep);background:var(--paper)}
+.hanging img{display:block;width:100%;aspect-ratio:1/1;object-fit:cover;animation:swayimg 8s ease-in-out infinite}
+@keyframes swayimg{0%,100%{transform:rotate(-.5deg) scale(1.02)}50%{transform:rotate(.5deg) scale(1.02)}}
+
+.rules{background:rgba(236,224,196,.96);color:var(--ink-text);border-radius:4px;padding:16px 18px;
+  border:1px solid var(--paper-edge);box-shadow:0 10px 30px rgba(0,0,0,.4)}
+.rules h3{font-family:'Ma Shan Zheng';font-size:24px;color:var(--verm-deep);margin-bottom:8px;letter-spacing:.1em}
+.rules ul{list-style:none;display:grid;gap:6px;font-size:13px;line-height:1.5}
+.rules li{display:flex;gap:8px;align-items:baseline}
+.rules .ic{flex:0 0 auto;width:18px;height:18px;border-radius:3px;display:grid;place-items:center;
+  color:#fff;font-size:11px;font-weight:700}
+.rules .ic.f{background:var(--gold-deep)}.rules .ic.j{background:var(--jade)}
+.rules .ic.m{background:#b07a3a}.rules .ic.g{background:var(--smoke)}
+.rules em{font-style:normal;color:var(--verm-deep);font-weight:600}
+
+.btn-big{font-family:'Ma Shan Zheng';font-size:26px;letter-spacing:.18em;color:var(--paper);
+  background:linear-gradient(180deg,var(--verm),var(--verm-deep));border:2px solid var(--gold);
+  padding:14px 30px;border-radius:6px;cursor:pointer;position:relative;overflow:hidden;
+  box-shadow:0 10px 26px rgba(143,43,31,.45), inset 0 1px 0 rgba(255,255,255,.2);
+  transition:transform .18s ease, box-shadow .18s ease}
+.btn-big::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 120%,rgba(230,195,127,.4),transparent 60%);opacity:0;transition:.3s}
+.btn-big:hover{transform:translateY(-2px) rotate(-.4deg);box-shadow:0 16px 34px rgba(143,43,31,.55)}
+.btn-big:hover::after{opacity:1}
+.btn-big:active{transform:translateY(0) scale(.98)}
+.btn-ghost{font-family:'Noto Serif SC';font-weight:600;font-size:14px;letter-spacing:.2em;color:var(--gold-bright);
+  background:transparent;border:1px solid rgba(201,161,92,.5);padding:12px 22px;border-radius:6px;cursor:pointer;transition:.2s}
+.btn-ghost:hover{background:rgba(201,161,92,.12);border-color:var(--gold-bright)}
+.title-foot{text-align:center;margin-top:34px;color:var(--text-dim);font-size:12px;letter-spacing:.25em}
+
+/* ---------- game ---------- */
+#screen-game{padding:0 clamp(12px,3vw,40px) 60px;max-width:1340px;margin:0 auto}
+.plaque-bar{display:flex;align-items:center;gap:18px;flex-wrap:wrap;justify-content:space-between;
+  padding:18px 0 14px;position:sticky;top:0;z-index:8;
+  background:linear-gradient(180deg,rgba(10,16,13,.92),rgba(10,16,13,.55));backdrop-filter:blur(4px)}
+.plaque{font-family:'Ma Shan Zheng';font-size:clamp(22px,3vw,30px);color:var(--gold-bright);letter-spacing:.12em;
+  padding:8px 22px;border:2px solid var(--gold-deep);border-radius:4px;position:relative;
+  background:linear-gradient(180deg,#1c130c,#0e0a06);
+  box-shadow:0 6px 18px rgba(0,0,0,.5), inset 0 0 0 1px rgba(230,195,127,.25)}
+.plaque::before,.plaque::after{content:"";position:absolute;top:3px;bottom:3px;width:6px;
+  background:repeating-linear-gradient(180deg,var(--gold) 0 3px,transparent 3px 6px)}
+.plaque::before{left:6px}.plaque::after{right:6px}
+.month-info{display:flex;flex-direction:column;align-items:center;gap:2px}
+.month-info .m-main{font-family:'Ma Shan Zheng';font-size:24px;color:var(--paper);letter-spacing:.1em}
+.month-info .m-sub{font-size:12px;color:var(--text-dim);letter-spacing:.2em}
+.bar-right{display:flex;align-items:center;gap:16px}
+.dots{display:flex;gap:6px;align-items:center}
+.dot{width:9px;height:9px;border-radius:50%;background:#33433a;transition:.4s;position:relative}
+.dot.done{background:var(--gold)}
+.dot.now{background:var(--verm-bright);box-shadow:0 0 9px var(--verm-bright);transform:scale(1.25)}
+.dot.daji{border-radius:2px;width:11px;height:11px;background:transparent;border:1px solid var(--gold)}
+.dot.daji.done{background:var(--gold)}
+.candle{width:9px;height:24px;background:linear-gradient(#e8dcc0,#c9b688);border-radius:3px;position:relative}
+.candle::before{content:"";position:absolute;top:-13px;left:50%;transform:translateX(-50%);width:9px;height:15px;
+  border-radius:50% 50% 50% 50%/62% 62% 38% 38%;
+  background:radial-gradient(circle at 50% 70%,#fff3c4,#ffb347 45%,#ff7a2a 80%);
+  filter:drop-shadow(0 0 9px #ff9a3c);animation:flick .16s infinite alternate}
+@keyframes flick{from{transform:translateX(-50%) scaleY(1) rotate(-2deg)}to{transform:translateX(-50%) scaleY(1.12) rotate(2deg)}}
+.snd-btn{font-family:'Noto Serif SC';font-weight:600;font-size:13px;color:var(--gold-bright);
+  background:rgba(20,30,25,.6);border:1px solid rgba(201,161,92,.45);border-radius:50%;width:38px;height:38px;
+  cursor:pointer;position:relative;transition:.2s}
+.snd-btn:hover{background:rgba(201,161,92,.15)}
+.snd-btn.off::after{content:"";position:absolute;left:6px;top:50%;width:26px;height:2px;background:var(--verm-bright);transform:rotate(-45deg)}
+
+.game-grid{display:grid;grid-template-columns:330px 1fr;gap:26px;margin-top:8px;align-items:start}
+.aside{display:flex;flex-direction:column;gap:18px;position:sticky;top:96px}
+.portrait{position:relative;padding:10px 10px 12px;border-radius:3px;
+  background:repeating-linear-gradient(45deg,#243b33 0 6px,#1b2f27 6px 12px);
+  box-shadow:0 14px 34px rgba(0,0,0,.5)}
+.portrait .rod{height:11px;background:linear-gradient(#7a5630,#3a2817);border-radius:6px;position:relative}
+.portrait .rod::before,.portrait .rod::after{content:"";position:absolute;top:50%;transform:translateY(-50%);
+  width:12px;height:12px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#e6c37f,#8a6a30)}
+.portrait .rod::before{left:-6px}.portrait .rod::after{right:-6px}
+.portrait figure{margin:7px 0;overflow:hidden;border:2px solid var(--gold-deep);background:var(--paper)}
+.portrait img{display:block;width:100%;aspect-ratio:4/5;object-fit:cover;transition:filter .8s ease;animation:swayimg 9s ease-in-out infinite}
+.portrait[data-mood="starving"] img{filter:grayscale(.72) brightness(.72) contrast(1.06)}
+.portrait[data-mood="hungry"] img{filter:grayscale(.35) brightness(.86)}
+.portrait .mood{text-align:center;font-size:12px;letter-spacing:.18em;color:var(--gold-bright);padding:6px 0 2px}
+.portrait .mood b{font-family:'Ma Shan Zheng';font-size:18px;color:var(--paper);font-weight:400}
+
+.stats{background:linear-gradient(180deg,var(--paper),var(--paper-2));border:1px solid var(--paper-edge);
+  border-radius:4px;padding:16px 16px 14px;box-shadow:0 12px 30px rgba(0,0,0,.4)}
+.stats h4{font-family:'Ma Shan Zheng';font-size:20px;color:var(--verm-deep);letter-spacing:.1em;margin-bottom:12px;
+  border-bottom:1px dashed rgba(143,43,31,.3);padding-bottom:8px}
+.stat{display:flex;align-items:center;gap:10px;margin-bottom:11px}
+.stat:last-child{margin-bottom:0}
+.stat-seal{flex:0 0 auto;width:26px;height:26px;border-radius:4px;display:grid;place-items:center;
+  color:#fff;font-weight:700;font-size:13px;font-family:'Noto Serif SC'}
+.stat-main{flex:1;min-width:0}
+.stat-name{font-size:12.5px;color:var(--ink-text);font-weight:600;display:flex;justify-content:space-between;margin-bottom:4px}
+.stat-name em{font-style:normal;color:var(--ink-soft);font-weight:400;font-size:11px}
+.bar{height:9px;background:rgba(120,90,40,.18);border-radius:5px;overflow:hidden;position:relative;
+  box-shadow:inset 0 1px 2px rgba(0,0,0,.18)}
+.bar .fill{display:block;height:100%;border-radius:5px;transition:width .7s cubic-bezier(.2,.8,.2,1);position:relative}
+.bar .fill::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(255,255,255,.3),transparent 60%)}
+.fill.food{background:linear-gradient(90deg,#caa24f,#e05538)}
+.fill.integrity{background:linear-gradient(90deg,#3f8f7d,#8fd0b3)}
+.fill.people{background:linear-gradient(90deg,#a9762f,#e6c37f)}
+.fill.ghost{background:linear-gradient(90deg,#5a3330,#a85a52)}
+.bar.low .fill{animation:pulseLow 1s ease-in-out infinite}
+@keyframes pulseLow{0%,100%{filter:brightness(1)}50%{filter:brightness(1.5)}}
+.flash-up{animation:flashUp .6s ease}
+.flash-down{animation:flashDown .6s ease}
+@keyframes flashUp{0%{box-shadow:0 0 0 0 rgba(111,174,143,.7)}100%{box-shadow:0 0 0 8px rgba(111,174,143,0)}}
+@keyframes flashDown{0%{box-shadow:0 0 0 0 rgba(194,64,47,.7)}100%{box-shadow:0 0 0 8px rgba(194,64,47,0)}}
+
+.log{background:rgba(14,22,18,.82);border:1px solid rgba(201,161,92,.22);border-radius:4px;
+  padding:12px 14px;max-height:230px;overflow-y:auto}
+.log h4{font-family:'Ma Shan Zheng';font-size:18px;color:var(--gold-bright);letter-spacing:.1em;margin-bottom:8px}
+.log-entry{font-size:12.5px;line-height:1.6;color:var(--text-dim);padding:5px 0 5px 22px;position:relative;
+  border-bottom:1px dotted rgba(201,161,92,.12);animation:logIn .4s ease}
+.log-entry:last-child{border-bottom:0}
+.log-entry .ls{position:absolute;left:0;top:6px;width:15px;height:15px;border-radius:3px;background:var(--verm-deep);
+  color:var(--paper);font-size:9px;display:grid;place-items:center;font-weight:700}
+.log-entry.story{color:var(--text-light)}
+.log-entry.good .ls{background:var(--jade)}
+.log-entry.bad .ls{background:var(--smoke)}
+.log-entry.dim{color:#8a8068}
+@keyframes logIn{from{opacity:0;transform:translateX(-8px)}to{opacity:1;transform:none}}
+.log::-webkit-scrollbar{width:6px}.log::-webkit-scrollbar-thumb{background:rgba(201,161,92,.3);border-radius:3px}
+
+/* ---------- stage / event ---------- */
+.stage{min-height:60vh}
+.event-card{position:relative;background:linear-gradient(180deg,var(--paper),var(--paper-2));
+  border:1px solid var(--paper-edge);border-radius:5px;padding:0 0 26px;
+  box-shadow:0 26px 60px rgba(0,0,0,.5), inset 0 0 70px rgba(120,90,40,.1)}
+.event-card.unroll{animation:unroll .8s cubic-bezier(.2,.8,.2,1) both}
+@keyframes unroll{from{clip-path:inset(0 0 100% 0);transform:translateY(-10px)}to{clip-path:inset(0 0 0 0);transform:none}}
+.scroll-rod{height:15px;background:linear-gradient(#7a5630,#3a2817);position:relative;border-radius:3px 3px 0 0}
+.scroll-rod::before,.scroll-rod::after{content:"";position:absolute;top:50%;transform:translateY(-50%);
+  width:18px;height:18px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#e6c37f,#8a6a30);
+  box-shadow:0 2px 5px rgba(0,0,0,.4)}
+.scroll-rod::before{left:-9px}.scroll-rod::after{right:-9px}
+.event-body{padding:24px clamp(20px,4vw,46px) 0}
+.month-tag{display:inline-block;font-family:'Ma Shan Zheng';font-size:18px;color:var(--paper);
+  background:var(--verm);padding:3px 12px;border-radius:3px;letter-spacing:.1em;
+  box-shadow:0 3px 8px rgba(143,43,31,.4)}
+.event-title{font-family:'Ma Shan Zheng';font-size:clamp(2rem,4vw,2.9rem);color:var(--ink-text);
+  margin:10px 0 4px;letter-spacing:.06em}
+.event-title::before{content:"·";color:var(--verm);margin-right:8px}
+.brush-hr{height:6px;border:0;margin:14px 0 18px;
+  background:radial-gradient(closest-side,rgba(42,36,27,.55),transparent) 0 50%/100% 100% no-repeat;
+  -webkit-mask:linear-gradient(90deg,transparent,#000 8%,#000 92%,transparent)}
+.event-text{color:var(--ink-text);font-size:16.5px;line-height:2;letter-spacing:.02em;text-align:justify}
+.event-text .hl{color:var(--verm-deep);font-weight:600}
+
+#choiceList{margin-top:22px;display:flex;flex-direction:column;gap:12px}
+.choice{text-align:left;cursor:pointer;background:linear-gradient(180deg,#f4ecd6,#e8dab6);
+  border:1px solid var(--paper-edge);border-left:5px solid var(--verm);border-radius:4px;
+  padding:13px 18px 13px 16px;position:relative;overflow:hidden;transition:transform .18s ease,box-shadow .18s ease,border-color .18s;
+  font-family:'Noto Serif SC'}
+.choice::before{content:"";position:absolute;left:0;top:0;bottom:0;width:0;background:rgba(194,64,47,.1);transition:width .3s}
+.choice:hover{transform:translateX(7px);box-shadow:0 8px 20px rgba(0,0,0,.18);border-left-color:var(--verm-bright)}
+.choice:hover::before{width:100%}
+.choice:active{transform:translateX(4px) scale(.995)}
+.choice .c-num{position:absolute;right:14px;top:12px;font-family:'Ma Shan Zheng';font-size:18px;color:rgba(143,43,31,.35)}
+.choice .c-label{font-size:16px;font-weight:600;color:var(--ink-text);position:relative}
+.choice .c-tags{margin-top:7px;display:flex;flex-wrap:wrap;gap:7px;position:relative}
+.tag{font-size:11px;padding:2px 8px;border-radius:10px;letter-spacing:.04em;font-weight:600}
+.tag.up{background:rgba(111,174,143,.18);color:#2f6f55}
+.tag.down{background:rgba(194,64,47,.14);color:var(--verm-deep)}
+.tag.flag{background:rgba(201,161,92,.22);color:var(--gold-deep)}
+
+.result-box{margin-top:22px;border-left:4px solid var(--gold);background:rgba(201,161,92,.1);
+  padding:16px 20px;border-radius:0 4px 4px 0;animation:fadeUp .6s ease both}
+.result-box p{color:var(--ink-text);font-size:16px;line-height:1.95}
+.result-box .r-label{font-family:'Ma Shan Zheng';font-size:18px;color:var(--verm-deep);margin-bottom:6px;letter-spacing:.1em}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.continue-row{margin-top:18px;display:flex;justify-content:flex-end}
+.btn-seal{font-family:'Ma Shan Zheng';font-size:20px;letter-spacing:.15em;color:var(--paper);
+  background:linear-gradient(180deg,var(--verm),var(--verm-deep));border:1px solid var(--gold);
+  padding:9px 26px;border-radius:5px;cursor:pointer;transition:.18s;box-shadow:0 6px 16px rgba(143,43,31,.4)}
+.btn-seal:hover{transform:translateY(-2px);box-shadow:0 10px 22px rgba(143,43,31,.5)}
+.btn-seal:active{transform:translateY(0) scale(.97)}
+
+/* ---------- floating feedback ---------- */
+.float-fb{position:fixed;z-index:40;pointer-events:none;font-family:'Noto Serif SC';font-weight:700;
+  font-size:14px;text-shadow:0 2px 6px rgba(0,0,0,.7);white-space:nowrap;animation:floatUp 1.3s ease forwards}
+.float-fb .line{display:block;text-align:center}
+.float-fb .up{color:#9fe6c4}.float-fb .down{color:#ff9a86}
+@keyframes floatUp{0%{opacity:0;transform:translateY(6px) scale(.9)}15%{opacity:1}100%{opacity:0;transform:translateY(-54px) scale(1.05)}}
+
+.jolt{animation:jolt .5s ease}
+@keyframes jolt{0%,100%{box-shadow:inset 0 0 0 0 rgba(194,64,47,0)}30%{box-shadow:inset 0 0 120px 0 rgba(194,64,47,.35)}}
+
+/* ---------- veil ---------- */
+#veil{position:fixed;inset:0;z-index:50;display:grid;place-items:center;pointer-events:none;opacity:0;
+  background:radial-gradient(circle at 50% 45%,rgba(16,24,20,.9),rgba(7,11,9,.98));transition:opacity .45s ease}
+#veil.show{opacity:1}
+.veil-inner{text-align:center}
+.veil-sub{font-size:14px;letter-spacing:.4em;color:var(--gold-bright);margin-bottom:8px}
+.veil-char{font-family:'Ma Shan Zheng';font-size:clamp(80px,16vw,170px);color:var(--paper);line-height:1;
+  text-shadow:0 0 40px rgba(201,161,92,.3);animation:veilChar 1.2s ease both}
+.veil-num{margin-top:10px;font-size:13px;letter-spacing:.3em;color:var(--text-dim)}
+@keyframes veilChar{0%{opacity:0;transform:scale(.7) translateY(20px)}40%{opacity:1}100%{opacity:1;transform:none}}
+
+/* ---------- ending ---------- */
+#screen-end{position:fixed;inset:0;z-index:45;overflow-y:auto}
+.end-bg{position:fixed;inset:0;width:100%;height:100%;object-fit:cover;filter:brightness(.42) saturate(.85);z-index:-2}
+.end-shade{position:fixed;inset:0;z-index:-1;background:radial-gradient(120% 90% at 50% 30%,rgba(10,16,13,.4),rgba(8,12,10,.92))}
+.end-wrap{max-width:760px;margin:0 auto;padding:60px clamp(16px,4vw,40px) 70px}
+.end-scroll{position:relative;background:linear-gradient(180deg,var(--paper),var(--paper-2));
+  border:1px solid var(--paper-edge);border-radius:6px;padding:40px clamp(22px,5vw,52px) 38px;
+  box-shadow:0 30px 80px rgba(0,0,0,.6), inset 0 0 80px rgba(120,90,40,.12)}
+.end-kicker{font-size:12px;letter-spacing:.4em;color:var(--verm-deep);font-weight:600;text-align:center}
+.end-head{text-align:center;margin:10px 0 6px}
+.end-head h2{font-family:'Ma Shan Zheng';font-size:clamp(2.6rem,7vw,4.2rem);color:var(--ink-text);letter-spacing:.08em}
+.end-rank{font-size:13px;letter-spacing:.3em;color:var(--gold-deep);margin-top:4px}
+.stamp{position:absolute;top:30px;right:clamp(18px,4vw,40px);width:96px;height:96px;border:4px solid var(--verm);
+  color:var(--verm);font-family:'Noto Serif SC';font-weight:900;font-size:34px;display:grid;place-items:center;
+  border-radius:9px;transform:rotate(-8deg);background:rgba(194,64,47,.06);
+  box-shadow:inset 0 0 0 2px rgba(194,64,47,.3);writing-mode:vertical-rl;line-height:1.1;letter-spacing:.05em;
+  opacity:0}
+.stamp.go{animation:stampIn .55s cubic-bezier(.2,1.4,.4,1) forwards}
+.stamp.go::after{content:"";position:absolute;inset:-30px;background:radial-gradient(circle,rgba(194,64,47,.18),transparent 60%);
+  animation:splat .55s ease forwards;z-index:-1}
+@keyframes stampIn{0%{opacity:0;transform:scale(2.8) rotate(-22deg)}55%{opacity:1;transform:scale(.92) rotate(-5deg)}75%{transform:scale(1.05) rotate(-9deg)}100%{opacity:1;transform:scale(1) rotate(-8deg)}}
+@keyframes splat{0%{opacity:0;transform:scale(.4)}60%{opacity:1}100%{opacity:.5;transform:scale(1)}}
+.end-text{color:var(--ink-text);font-size:16.5px;line-height:2.05;margin:22px 0 18px;text-align:justify;white-space:pre-line}
+.end-quote{font-family:'Zhi Mang Xing',cursive;font-size:22px;color:var(--gold-deep);text-align:center;
+  border-top:1px dashed rgba(143,43,31,.3);border-bottom:1px dashed rgba(143,43,31,.3);padding:14px 0;margin:18px 0}
+.end-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}
+.end-stat{text-align:center;background:rgba(120,90,40,.1);border-radius:4px;padding:10px 6px}
+.end-stat .v{font-family:'Ma Shan Zheng';font-size:30px;color:var(--verm-deep);line-height:1}
+.end-stat .k{font-size:11px;color:var(--ink-soft);margin-top:4px;letter-spacing:.1em}
+.end-deeds{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:6px 0 22px}
+.deed{font-size:12px;padding:4px 12px;border-radius:14px;background:rgba(111,174,143,.18);color:#2f6f55;font-weight:600;letter-spacing:.05em}
+.end-actions{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+
+/* ---------- censer ---------- */
+#censer{position:fixed;right:24px;bottom:18px;width:92px;z-index:2;pointer-events:none;opacity:.92}
+#censer .ember{fill:var(--verm-bright);filter:drop-shadow(0 0 7px var(--verm-bright));animation:lanternpulse 2.4s ease-in-out infinite}
+
+/* ---------- responsive ---------- */
+@media(max-width:980px){
+  .title-main{grid-template-columns:1fr}
+  .title-side{order:-1}
+  .hanging{max-width:340px;margin:0 auto;width:100%}
+  .game-grid{grid-template-columns:1fr}
+  .aside{position:static;flex-direction:column}
+  .portrait figure img{aspect-ratio:16/9}
+  .story-inner{height:min(40vh,360px)}
+}
+@media(max-width:680px){
+  .story-inner{writing-mode:horizontal-tb;height:auto;max-height:230px;overflow-y:auto;overflow-x:hidden;
+    background-image:none;line-height:1.9}
+  .story-scroll::after{display:none}
+  .end-stats{grid-template-columns:repeat(2,1fr)}
+  .stamp{width:74px;height:74px;font-size:26px;top:18px}
+  #censer{display:none}
+  .plaque-bar{gap:10px}
+  .dots{display:none}
+}
+</style>
+</head>
+<body>
+
+<canvas id="ambient"></canvas>
+<div class="bg-layer mountains m2">
+  <svg viewBox="0 0 1200 400" preserveAspectRatio="none"><path d="M0,400 L0,250 Q150,150 300,230 Q450,120 620,210 Q800,90 980,200 Q1100,150 1200,220 L1200,400 Z" fill="#16241d"/></svg>
+</div>
+<div class="bg-layer mountains m1">
+  <svg viewBox="0 0 1200 400" preserveAspectRatio="none"><path d="M0,400 L0,300 Q120,230 260,290 Q420,200 560,280 Q720,210 900,290 Q1040,240 1200,300 L1200,400 Z" fill="#1d2e26"/></svg>
+</div>
+<svg class="bg-layer temple" viewBox="0 0 200 130" preserveAspectRatio="xMidYMax meet">
+  <path d="M6,68 C40,42 70,24 100,20 C130,24 160,42 194,68 L176,68 C148,48 124,36 100,34 C76,36 52,48 24,68 Z" fill="#0e1813"/>
+  <rect x="42" y="68" width="116" height="42" fill="#0b130f"/>
+  <rect x="88" y="78" width="24" height="32" fill="#050907"/>
+  <circle cx="94" cy="92" r="2" fill="#e6c37f"/>
+  <circle class="lantern-dot" cx="54" cy="76" r="4.5"/>
+  <circle class="lantern-dot b" cx="146" cy="76" r="4.5"/>
+  <rect x="32" y="110" width="136" height="9" fill="#0e1813"/>
+</svg>
+
+<div class="noise"></div>
+<div class="vignette"></div>
+
+<svg id="censer" viewBox="0 0 100 90">
+  <ellipse class="ember" cx="50" cy="34" rx="6" ry="3"/>
+  <path d="M30,36 Q50,30 70,36 L66,58 Q50,66 34,58 Z" fill="#3a2817"/>
+  <path d="M28,36 Q50,28 72,36 L70,42 Q50,36 30,42 Z" fill="#5a3d22"/>
+  <path d="M44,28 Q50,18 56,28 Z" fill="#5a3d22"/>
+  <circle cx="50" cy="16" r="3" fill="#8a6a30"/>
+  <path d="M38,62 L34,82 M62,62 L66,82 M50,64 L50,84" stroke="#3a2817" stroke-width="4" stroke-linecap="round"/>
+  <ellipse cx="50" cy="84" rx="22" ry="4" fill="#2a1c10" opacity=".5"/>
+</svg>
+
+<!-- ============ TITLE ============ -->
+<section id="screen-title" class="screen active">
+  <div class="lantern l" style="left:6%"><div class="string"></div><div class="body"></div><div class="tassel"></div></div>
+  <div class="lantern r" style="right:6%"><div class="string"></div><div class="body"></div><div class="tassel"></div></div>
+
+  <div class="title-top">
+    <div class="mini-plaque">袁枚《子不語》</div>
+    <h1 class="big-title">土地挨餓<span class="seal-stamp">子不語印</span></h1>
+    <div class="title-sub">杭州錢塘邑生張望齡 · 病瘧見故人 · 一段陰司公案</div>
+  </div>
+
+  <div class="title-main">
+    <div class="story-scroll">
+      <div class="story-inner" id="storyText">杭州錢塘邑生張望齡，病瘧。熱重時，見已故同學顧某者踉蹌而來，曰：「兄壽算已絕，幸幼年曾救一女，益壽一紀。前兄所救之女知兄病重，特來奉探，為地方鬼棍所詐，誣以平素有黯昧事。弟大加呵飭，方遣之去，特詣府奉賀。」張見故人為己事而來，衣裳藍縷，面有菜色，因謝以金。顧辭不受，曰：「我現為本處土地神，因官職小，地方清苦，我又素講操守，不肯擅受鬼詞，濫作威福，故終年無香火，雖作土地，往往受餓。然非分之財，雖故人見贈，我終不受。」張大笑。次日，具牲牢祭之，又夢顧來謝曰：「人得一飽，可耐三日；鬼得一飽，可耐一年。我受君恩，可挨到陰司大計，望薦卓異矣。」張問：「如此清官，何以不即升城隍？」曰：「解應酬者，可望格外超升；做清官者，只好大計卓薦。」</div>
+    </div>
+
+    <aside class="title-side">
+      <div class="hanging">
+        <div class="rod"></div>
+        <figure><img src="https://image.qwenlm.ai/public_source/a2280586-c4e6-40d0-ade6-e1283a8224d4/1a0bc435f-660d-4401-82e7-68b0fc87e6e9.png" alt="病榻見故人"></figure>
+        <div class="rod"></div>
+      </div>
+      <div class="rules">
+        <h3>玩法 · 權掌土地祠</h3>
+        <ul>
+          <li><span class="ic f">食</span><span><em>飽食</em> — 香火維生，歸零則餓斃祠中</span></li>
+          <li><span class="ic j">操</span><span><em>操守</em> — 清廉之本，歸零則貪鄙革職</span></li>
+          <li><span class="ic m">民</span><span><em>民心</em> — 百姓香火，高則月月有供</span></li>
+          <li><span class="ic g">棍</span><span><em>鬼棍</em> — 奸邪勢力，過高則被構陷</span></li>
+        </ul>
+        <p style="font-size:12px;color:var(--ink-soft);margin-top:10px;line-height:1.6">撐過十二個月，迎接陰司大計。清官挨餓，奸棍得志——你，如何自處？</p>
+      </div>
+      <button class="btn-big" id="btnStart">入夢 · 升座視事</button>
+    </aside>
+  </div>
+  <div class="title-foot">改編自袁枚《子不語》· 土地受餓 ｜ 共六種結局</div>
+</section>
+
+<!-- ============ GAME ============ -->
+<section id="screen-game" class="screen">
+  <header class="plaque-bar">
+    <div class="plaque">錢塘縣土地祠</div>
+    <div class="month-info">
+      <div class="m-main" id="hdrMonth">乾隆五年 · 上元前夜</div>
+      <div class="m-sub" id="hdrSub">距陰司大計 · 十二月</div>
+    </div>
+    <div class="bar-right">
+      <div class="dots" id="dots"></div>
+      <div class="candle" title="青燈"></div>
+      <button class="snd-btn" id="sndBtn" title="音聲">音</button>
+    </div>
+  </header>
+
+  <div class="game-grid">
+    <aside class="aside">
+      <div class="portrait" id="portrait" data-mood="ok">
+        <div class="rod"></div>
+        <figure><img src="https://image.qwenlm.ai/public_source/a2280586-c4e6-40d0-ade6-e1283a8224d4/1521563e4-17b7-41ac-a3e2-5086b362b6c3.png" alt="土地公顧某"></figure>
+        <div class="rod"></div>
+        <div class="mood">土地公 · <b id="moodText">神光湛然</b></div>
+      </div>
+
+      <div class="stats">
+        <h4>祠中四柱</h4>
+        <div class="stat"><div class="stat-seal" style="background:var(--gold-deep)">食</div><div class="stat-main"><div class="stat-name">飽食<em>香火</em></div><div class="bar" id="bar-food"><i class="fill food"></i></div></div></div>
+        <div class="stat"><div class="stat-seal" style="background:var(--jade)">操</div><div class="stat-main"><div class="stat-name">操守<em>清廉</em></div><div class="bar" id="bar-integrity"><i class="fill integrity"></i></div></div></div>
+        <div class="stat"><div class="stat-seal" style="background:#b07a3a">民</div><div class="stat-main"><div class="stat-name">民心<em>香火源</em></div><div class="bar" id="bar-people"><i class="fill people"></i></div></div></div>
+        <div class="stat"><div class="stat-seal" style="background:var(--smoke)">棍</div><div class="stat-main"><div class="stat-name">鬼棍<em>奸邪</em></div><div class="bar" id="bar-ghost"><i class="fill ghost"></i></div></div></div>
+      </div>
+
+      <div class="log">
+        <h4>起居注</h4>
+        <div id="logList"></div>
+      </div>
+    </aside>
+
+    <div class="stage">
+      <div class="event-card" id="eventCard">
+        <div class="scroll-rod"></div>
+        <div class="event-body">
+          <span class="month-tag" id="evTag">楔子</span>
+          <h2 class="event-title" id="evTitle">你便是顧某</h2>
+          <hr class="brush-hr">
+          <div class="event-text" id="evText"></div>
+          <div id="choiceList"></div>
+          <div id="resultArea"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ ENDING ============ -->
+<section id="screen-end" class="screen">
+  <img class="end-bg" src="https://image.qwenlm.ai/public_source/a2280586-c4e6-40d0-ade6-e1283a8224d4/1a1297625-9f7f-4f11-bf87-431ffd69e6f9.png" alt="陰司大計">
+  <div class="end-shade"></div>
+  <div class="end-wrap">
+    <div class="end-scroll">
+      <div class="stamp" id="endSeal"><span id="endSealChar"></span></div>
+      <div class="end-kicker">陰司大計 · 考功司核覆</div>
+      <div class="end-head"><h2 id="endTitle"></h2><div class="end-rank" id="endRank"></div></div>
+      <p class="end-text" id="endText"></p>
+      <blockquote class="end-quote" id="endQuote" style="display:none"></blockquote>
+      <div class="end-stats" id="endStats"></div>
+      <div class="end-deeds" id="endDeeds"></div>
+      <div class="end-actions">
+        <button class="btn-big" id="btnRetry">再入輪迴</button>
+        <button class="btn-ghost" id="btnBack">重讀卷首</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ VEIL ============ -->
+<div id="veil">
+  <div class="veil-inner">
+    <div class="veil-sub" id="veilSub"></div>
+    <div class="veil-char" id="veilChar"></div>
+    <div class="veil-num" id="veilNum"></div>
+  </div>
+</div>
+
+<script>
+/* ============ AUDIO ============ */
+const Snd = {
+  ctx:null, on:true,
+  ensure(){ if(!this.ctx){ try{ this.ctx=new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} } if(this.ctx&&this.ctx.state==='suspended') this.ctx.resume(); },
+  tone(f,t=0,dur=0.6,type='triangle',vol=0.16){ if(!this.on||!this.ctx)return; const c=this.ctx,o=c.createOscillator(),g=c.createGain(); o.type=type;o.frequency.value=f; const n=c.currentTime+t; g.gain.setValueAtTime(0.0001,n); g.gain.exponentialRampToValueAtTime(vol,n+0.02); g.gain.exponentialRampToValueAtTime(0.0001,n+dur); o.connect(g);g.connect(c.destination);o.start(n);o.stop(n+dur+0.05); },
+  pluck(){ const s=[261.63,293.66,329.63,392,440,523.25]; const f=s[Math.floor(Math.random()*s.length)]; this.tone(f,0,0.5,'triangle',0.13); this.tone(f*2,0.01,0.22,'sine',0.04); },
+  gong(){ this.tone(98,0,1.8,'sine',0.18); this.tone(147,0.03,1.3,'sine',0.08); this.tone(65,0,2.2,'sine',0.1); },
+  stamp(){ this.tone(150,0,0.16,'square',0.1); this.tone(78,0.04,0.32,'sine',0.18); },
+  good(){ this.tone(523.25,0,0.3,'sine',0.1); this.tone(659.25,0.1,0.4,'sine',0.1); }
+};
+document.addEventListener('pointerdown',()=>Snd.ensure());
+
+/* ============ AMBIENT CANVAS ============ */
+const cv=document.getElementById('ambient'), cx=cv.getContext('2d');
+let W,H; function rsz(){ W=cv.width=innerWidth; H=cv.height=innerHeight; } rsz(); addEventListener('resize',rsz);
+const wisps=Array.from({length:14},()=>({x:Math.random()*innerWidth,y:Math.random()*innerHeight*0.85,r:1+Math.random()*2.2,ph:Math.random()*6.28,sp:0.2+Math.random()*0.5,amp:10+Math.random()*26}));
+const smoke=[]; let lastS=0;
+function emitter(){ const el=document.getElementById('censer'); if(!el||getComputedStyle(el).display==='none') return {x:innerWidth*0.92,y:innerHeight-58}; const r=el.getBoundingClientRect(); return {x:r.left+r.width*0.5,y:r.top+8}; }
+let t=0;
+(function loop(){ t+=0.016; cx.clearRect(0,0,W,H);
+  for(const w of wisps){ const x=w.x+Math.sin(t*w.sp+w.ph)*w.amp, y=w.y+Math.cos(t*w.sp*0.7+w.ph)*w.amp*0.6; const a=0.22+0.2*Math.sin(t*2+w.ph); cx.save(); cx.globalAlpha=Math.max(0.04,a); cx.shadowColor='rgba(122,214,190,0.9)'; cx.shadowBlur=14; cx.fillStyle='rgba(150,230,205,0.9)'; cx.beginPath(); cx.arc(x,y,w.r,0,6.29); cx.fill(); cx.restore(); w.y-=0.05; if(w.y<-12){w.y=H+12;w.x=Math.random()*W;} }
+  if(t-lastS>0.2 && smoke.length<64){ lastS=t; const e=emitter(); smoke.push({x:e.x+(Math.random()*8-4),y:e.y,r:2+Math.random()*2,a:0.26,ph:Math.random()*6.28}); }
+  for(let i=smoke.length-1;i>=0;i--){ const p=smoke[i]; p.y-=0.5; p.x+=Math.sin(t*1.3+p.ph)*0.32; p.r+=0.09; p.a-=0.0024; if(p.a<=0){smoke.splice(i,1);continue;} cx.globalAlpha=p.a; cx.fillStyle='rgba(210,205,190,1)'; cx.beginPath(); cx.arc(p.x,p.y,p.r,0,6.29); cx.fill(); }
+  cx.globalAlpha=1; requestAnimationFrame(loop);
+})();
+let mx=0,my=0,tx=0,ty=0;
+addEventListener('mousemove',e=>{ tx=(e.clientX/innerWidth-0.5); ty=(e.clientY/innerHeight-0.5); });
+(function par(){ mx+=(tx-mx)*0.05; my+=(ty-my)*0.05; document.documentElement.style.setProperty('--px',mx.toFixed(3)); document.documentElement.style.setProperty('--py',my.toFixed(3)); requestAnimationFrame(par); })();
+
+/* ============ DATA ============ */
+const MONTHS=["正月","杏月","桃月","槐月","蒲月","荷月","蘭月","桂月","菊月","陽月","冬月","臘月"];
+const NAME={food:'飽食',integrity:'操守',people:'民心',ghost:'鬼棍',social:'應酬'};
+
+const EVENTS=[
+ {title:"履新",
+  text:s=>`你姓顧，名某，錢塘邑生，歿後蒙陰司授為本處土地。正月十五，你第一次升座受事。老鬼吏引一老鬼上前，拱手道：「舊例：新官到任，合境鬼魂例送『常例香』三炷，望老爺笑納。」老鬼雙手捧香，眼神卻滴溜溜地亂轉。`,
+  choices:s=>[
+   {label:"循例收下", eff:{food:8,integrity:-6,social:1,ghost:5}, result:"你收了三炷香。老鬼吏拈鬚微笑：「老爺是識時務的。」香煙入鼻，腹中稍暖，心頭卻掠過一絲不安。"},
+   {label:"嚴詞擲還", eff:{food:-4,integrity:8,people:3}, result:"你拂袖道：「例不該收，香亦不受。」老鬼慚愧而退。是夜你飢腸雷動，徹夜難眠——腰桿卻是筆直的。"},
+   {label:"盤問來歷", eff:{integrity:4,ghost:-5,people:2}, result:"你問：「此香從何而來？」老鬼支吾不能對，擲香便走。老鬼吏在旁嘆道：「老爺精明。只是這般精明，往後的日子怕是不好熬。」"}
+  ]},
+ {title:"誣案",
+  text:s=>`一女鬼啼哭上堂。她生前是郊外民女，幼年曾為邑生張望齡所救，不幸病歿；聞張生染瘧病重，特來奉探，卻被地方鬼棍攔住，索要「過路香」。女鬼不從，鬼棍便誣她「平素有黯昧事」，扭送你處，要你發落。堂下那鬼棍擠眉弄眼，袖中露出十炷高香。`,
+  choices:s=>[
+   {label:"拍案呵斥", eff:{food:-4,integrity:10,people:8,ghost:-12}, set:{girl:true}, result:"你拍案而起：「貞女含冤！爾等鬼棍，詐財誣良，敢爾！」大加呵飭，立命叉出祠門。鬼棍抱頭鼠竄。女鬼再拜泣謝：「老爺青天。小女子此恩，銜結難報。」"},
+   {label:"受香枉斷", eff:{food:12,integrity:-15,people:-8,ghost:15,social:1}, result:"你收了鬼棍十炷香，反責女鬼「不守幽規」，杖二十，逐出祠門。女鬼含淚而去，目中如死灰。鬼棍拱手獰笑：「老爺明斷。」"},
+   {label:"和稀泥，各退一步", eff:{food:3,integrity:-3,ghost:5,people:-2}, result:"你懶得深究，揮手道：「一個巴掌拍不響，各自退去。」兩造皆不服，悻悻而散。堂上香煙散亂，一如你此刻的心。"}
+  ]},
+ {title:"贈金",
+  text:s=>`張望齡瘧疾漸癒。他依稀記得病中故人相救，遂齋戒沐浴，親詣土地祠，長揖到地：「蒙尊神庇佑，學生感激不盡。薄金十兩，聊表寸心，伏惟笑納。」燭光下，黃金燦然。`,
+  choices:s=>[
+   {label:"堅辭不受", eff:{food:-2,integrity:12,people:5}, set:{zhang:true}, result:"你隔著香煙，緩緩道：「非分之財，雖故人見贈，我終不受。」張生大笑，再拜而去，逢人便稱土地祠神靈清正。"},
+   {label:"笑納換香", eff:{food:15,integrity:-12,social:2}, result:"你受了金，託夢廟祝換作香燭紙馬。張生聞之，默然良久，嘆一聲「原來如此」，自此不復再來。"},
+   {label:"轉贈餓鬼", eff:{food:4,integrity:8,people:8}, set:{zhang:true}, result:"你託夢廟祝，將金盡數施與境內餓鬼。餓鬼們得飽，感你恩德，相約月月獻香。張生聽聞，嘆道：「顧公之德，不可及也。」"}
+  ]},
+ {title:"饑饉",
+  text:s=>`春荒。錢塘米貴，百姓自顧不暇，祠中香火斷絕。你已多日未得一飽，面有菜色，藍縷的官袍愈發空蕩。老鬼吏勸道：「老爺，變通變通罷。餓死的清官，陰司是不立牌坊的。」`,
+  choices:s=>{
+    const a=[
+     {label:"忍饑守節", eff:{food:-6,integrity:10,people:4}, result:"你整衣危坐，誦《感應篇》以忘飢。腸鳴如破鼓，你卻笑道：「餓死事小，失節事大。」門外有老婦經過，隱約見神像清瘦，嘖嘖嘆息。"},
+     {label:"夜受鬼賂", eff:{food:14,integrity:-14,ghost:10,social:1}, result:"深夜，你悄悄收了幾張鬼詞的「孝敬」，得香一斗。吃飽的滋味真好——只是燭影裡，自己的影子都看不起自己。"}
+    ];
+    if(s.flags.zhang) a.push({label:"託夢於張", eff:{food:10,integrity:2}, result:"你託夢張生：「人得一飽，可耐三日；鬼得一飽，可耐一年。」張生醒而淚下，次日便遣人送香燭來。"});
+    else a.push({label:"夜拾殘供", eff:{food:6,integrity:4}, result:"你趁夜出巡，拾些人家墳前的冷供殘果。飢則飢矣——取之有道，不偷不搶。"});
+    return a;
+  }},
+ {title:"謠言",
+  text:s=>`鬼棍懷恨，四下散播流言：「本境土地又窮又拗，有香不納，必是暗中攢著金銀，另謀高就。」一時間人心浮動，祠前冷落，連那幾個常來拜的老婆婆也繞道走了。`,
+  choices:s=>[
+   {label:"張榜自陳", eff:{food:-4,integrity:4,people:8}, result:"你託夢廟祝，將一年收支張榜祠門：某月收香三炷，某月退賄十炷，筆筆可查。百姓圍觀，都道：「原來土地爺窮得這般乾淨。」"},
+   {label:"緘默不辯", eff:{integrity:6,people:-6}, result:"你道：「清者自清。」閉門不出。流言卻如春草——越不踩，越瘋長。"},
+   {label:"密查棍惡", eff:{food:-6,integrity:6,ghost:-15}, set:{investigated:true}, result:"你遣耳報神暗查，取得鬼棍訛詐亡魂的賬簿，抄錄張貼。往來鬼魂拍手稱快；鬼棍恨你入骨，卻也怕了你三分。"}
+  ]},
+ {title:"巡察",
+  text:s=>`陰司巡察使微服至錢塘，暗訪土地祠。他見祠宇窄小，香爐冷清，神像衣冠藍縷、面有菜色，不由駐足，向廟祝打聽你的為官聲跡。`,
+  choices:s=>[
+   {label:"據實以告", eff:st=>({food:-2,integrity:8,people:st.people>=55?4:0}), result:"你坦然道：「地方清苦，小神又素講操守，不肯擅受鬼詞、濫作威福，故終年無香火，往往受餓。」巡察使默然良久，記你一笔。"},
+   {label:"盛情款待", eff:{food:-12,integrity:-6,social:3,ghost:5}, result:"你借了香燭辦接風，又託鬼棍牽線拜見隨從。巡察使吃得滿意，拍肩道：「懂事。」你陪著笑，心裡滴著血。"},
+   {label:"稱病避見", eff:{integrity:2,social:-1}, result:"你託病不出。巡察使冷哼一聲：「架子倒大。」拂袖而去。"}
+  ]},
+ {title:"牲牢",
+  text:s=> s.flags.zhang ? `七月十五，張望齡具牲牢——牛一、羊一、豕一，親率家人至祠大祭。鼓樂喧天，香煙沖霄，半個錢塘都聞得到。你藍縷的官袍，難得被香煙熏暖。` : `七月十五，中元。別處廟宇笙歌鼎沸，你祠前只有幾個餓鬼了半炷殘香，可憐兮兮地拜了又拜。`,
+  choices:s=> s.flags.zhang ? [
+   {label:"受祭，託夢致謝", eff:{food:30,integrity:5,people:6}, result:"你一飽，可耐一年。是夜託夢張生致謝，張生笑問：「如此清官，何以不即升城隍？」你答：「解應酬者，可望格外超升；做清官者，只好大計卓薦。」張生嘆息不已。"},
+   {label:"分祭於眾鬼", eff:{food:22,integrity:6,people:10}, result:"你將祭品分與合境餓鬼同享。眾鬼歡呼，環祠叩拜，齊聲道謝。張生聞之，嘆道：「顧公仁厚。」"}
+  ] : [
+   {label:"與鬼分食", eff:{food:6,integrity:6,people:6}, result:"你將半炷殘香與餓鬼們分了。香雖少，情義重。餓鬼們說：土地爺自己餓著，還分給我們。"},
+   {label:"獨吞殘香", eff:{food:12,integrity:-4,people:-4}, result:"你獨自受了那半炷香。鬼們眼巴巴望著，不敢言，也不敢走。"}
+  ]},
+ {title:"構陷",
+  text:s=>`鬼棍挾恨，勾結祠中老鬼吏，盜取「香錢」——其實根本沒有香錢——反誣你「侵吞常例」，一紙狀子遞到府城隍案前。府裡差鬼役下來查辦，祠門外圍滿了看熱鬧的鬼。`,
+  choices:s=>[
+   {label:"坦然受查", eff:st=> st.integrity>=60?{integrity:8,ghost:-20,people:8}:{food:-10,integrity:-8,ghost:5}, set:st=> st.integrity>=60?{cleared:true}:{}, result:st=> st.integrity>=60?`你敞開祠門，捧出賬簿：「某月收香幾炷，某月退賄幾樁，筆筆可查。」差役翻完，肅然起敬：「窮得乾淨，倒是頭一回見。」鬼棍反坐，杖三十。`:`你支支吾吾——那些夜受的鬼賂，賬上到底有虧空。差役冷笑，草草結案，記你「操守存疑」。`},
+   {label:"花錢消災", eff:{food:-10,integrity:-8,social:3,ghost:5}, result:"你託老鬼吏送上「茶水香」。差役掂了掂，狀子當夜便「遺失」了。鬼棍在門外冷笑：「老爺原也會這一手。」"},
+   {label:"反戈一击", eff:st=> (st.flags.investigated||st.integrity>=70)?{integrity:10,ghost:-25,people:6,food:-6}:{integrity:-6,ghost:8,food:-4}, result:st=> (st.flags.investigated||st.integrity>=70)?`你取出暗查所得的鬼棍訛詐賬簿，連同狀子一并呈上。府城隍大怒：「惡棍誣良！」鬼棍枷號示眾，發往枉死城充役。`:`你倉促反告，卻拿不出實據，反被斥「挾私報復」，記過一笔。`}
+  ]},
+ {title:"時疫",
+  text:s=>`秋疫橫行，錢塘十室九病。百姓四處求神，別處廟宇香火鼎盛。你祠中——${s.people>=60?`病人家屬相率而來，香燭堆滿了供桌，都道土地爺向來靈驗。`:`依舊冷冷清清，只有一個老婦跪在門外，磕了三個頭。`}`,
+  choices:s=>[
+   {label:"施藥驅疫", eff:{food:-8,integrity:6,people:12}, set:{plague:true}, result:"你耗盡僅存的香火之力，託夢藥方，親率祠中鬼役驅散疫鬼。病者漸愈，民間都傳土地爺顯靈。"},
+   {label:"閉門守祠", eff:{food:-2,integrity:2,people:-8}, result:"你閉門自守，任門外哭聲震天。疫過之後，人記得你，也記不得你。"},
+   {label:"有償辦事", eff:{food:6,integrity:-6,people:4}, result:"你託夢：「獻香一炷，賜方一劑。」香是收了，病也治了——只是背後有人戳脊梁骨。"}
+  ]},
+ {title:"關說",
+  text:s=>`大計將至。鬼棍忽然登門，換了一副笑臉：「老爺，陰司的門路，小人門兒清。三百炷高香，包您大計考個『勤能』。不然麼——」他嘿嘿一笑，「考語上寫幾筆『居官貪鄙』，也是有的。」`,
+  choices:s=>[
+   {label:"嚴詞逐出", eff:{food:-4,integrity:12,ghost:10}, set:{rebuked:true}, result:"你擲還他那副笑臉：「考語憑公論，不憑你這張嘴。」鬼棍變色而去，臨出門，狠狠啐了一口。"},
+   {label:"虛與委蛇", eff:{integrity:-4,social:2,ghost:5}, result:"你含笑敷衍，不答應，也不得罪。鬼棍摸不透你的底細，悻悻而歸。"},
+   {label:"傾囊行賄", eff:{food:-20,integrity:-18,social:4}, result:"你咬牙湊出三百炷香——那是一年的口糧。鬼棍收了，拍拍你的肩：「老爺，這就上路了。」"}
+  ]},
+ {title:"計前",
+  text:s=>`十一月底，大計在即。考功司行文已到：各土地自陳一年政績，聽候核奪。是夜，你獨坐祠中，對一盞青燈，聽窗外北風嗚嗚。`,
+  choices:s=>[
+   {label:"秉筆直書", eff:{food:-4,integrity:8}, result:"你自陳：任內不受鬼詞，不濫威福；境有誣案，立斥奸棍；時疫施方，活人若干。字字屬實，不飾一字。"},
+   {label:"託棍關說", eff:{food:-6,integrity:-10,social:3,ghost:8}, result:"你託鬼棍給考功司書吏捎了「常例」。書吏收了，考語上預填「應酬練達」四字。"},
+   {label:"擱筆不寫", eff:{food:-2}, result:"你嘆口氣，把自陳狀擱下了。考功司照例，給你填了「平平」二字。"}
+  ]}
+];
+
+const ENDINGS={
+ starve:{rank:"其一",seal:"殍",title:"餓斃祠中",quote:"人得一飽，可耐三日；鬼得一飽，可耐一年。",
+  text:s=>`大計未至，你終究沒有挨到那一天。\n\n鬼得一飽，可耐一年——你卻餓了整整一年。形神漸漸淡去，化作錢塘城外一縷無名餓鬼。你消散那日，供桌上還剩兩炷冷香，是你自己沒捨得受的。`},
+ dismiss:{rank:"其二",seal:"革",title:"貪鄙革職",quote:null,
+  text:s=>`考功司核你一年行止，朱筆一批：「身居神職，貪鄙無狀。」\n\n你被褫奪土地之職，發往枉死城聽勘。鬼棍如願坐上你的位子——從此土地祠香火鼎盛，只是再沒有窮鬼敢上門喊冤。`},
+ framed:{rank:"其三",seal:"枉",title:"奸棍得逞",quote:null,
+  text:s=>`鬼棍的狀子雪片般飛進陰司，又有「門路」從中使力。大計之日，考語四字：「居官貪鄙。」\n\n你被貶為錢塘城外遊魂，眼睜睜看鬼棍穿上你的官袍。自此祠中香煙不絕——都是買路錢。`},
+ excellent:{rank:"其四",seal:"卓異",title:"大計卓異",quote:"解應酬者，可望格外超升；做清官者，只好大計卓薦。",
+  text:s=>`大計之日，考功司核你一年行止：不受鬼詞，不濫威福，斥奸棍，活疫民。朱筆一批：「卓異。」\n\n有同僚問：「如此清官，何不即升城隍？」主考笑曰：「解應酬者，可望格外超升；做清官者，只好大計卓薦。」\n\n你大笑，拜謝而歸。錢塘的土地爺，依舊藍縷，依舊受餓——只是這一回，餓得挺直。`+(s.flags.zhang?`\n\n張望齡聞訊，再具牲牢，親至祠中致祭。祠前香煙，經月不散。`:"")},
+ promote:{rank:"其五",seal:"陞",title:"格外超升",quote:null,
+  text:s=>`三百炷高香沒有白費。大計之日，考語：「應酬練達，辦事勤能。」你被格外超升為杭州府城隍。\n\n報喜那日，鬼棍換上新衣，在你轎前執鞭墜鐙，笑得像一朵花。夜半無人，你摸著嶄新的官袍，忽然想起那年餓得睡不著的夜——如今飽了，卻睡不著了。`},
+ stay:{rank:"其六",seal:"平",title:"照舊留任",quote:null,
+  text:s=>`大計核畢，考語二字：「平平。」\n\n你照舊做你的錢塘土地，不升不降。香還是那麼少，肚子還是那麼餓，只是腰桿，還是那麼直。歲月正長。`}
+};
+
+/* ============ STATE ============ */
+let state, phase='title', locked=false;
+function newState(){ return {month:-1, food:60, integrity:65, people:45, ghost:25, social:0, flags:{}, log:[], dead:null}; }
+const clamp=(v)=>Math.max(0,Math.min(100,v));
+function clampAll(s){ s.food=clamp(s.food); s.integrity=clamp(s.integrity); s.people=clamp(s.people); s.ghost=clamp(s.ghost); }
+function resolve(x,s){ return typeof x==='function'? x(s): x; }
+
+/* ============ DOM ============ */
+const $=id=>document.getElementById(id);
+const screens={title:$('screen-title'),game:$('screen-game'),end:$('screen-end')};
+function showScreen(name){ for(const k in screens) screens[k].classList.toggle('active',k===name); window.scrollTo(0,0); }
+
+/* dots */
+function buildDots(){ const d=$('dots'); d.innerHTML=''; for(let i=0;i<12;i++){ const e=document.createElement('div'); e.className='dot'+(i===11?' daji':''); d.appendChild(e); } }
+function updateDots(){ const ds=$('dots').children; for(let i=0;i<12;i++){ ds[i].classList.toggle('done', i<state.month || (i===11&&phase==='end')); ds[i].classList.toggle('now', i===state.month && phase==='game'); } }
+
+/* bars */
+function updateBars(delta){
+  const map={food:'bar-food',integrity:'bar-integrity',people:'bar-people',ghost:'bar-ghost'};
+  for(const k in map){ const bar=$(map[k]); bar.querySelector('.fill').style.width=state[k]+'%';
+    if(delta&&delta[k]){ bar.classList.remove('flash-up','flash-down'); void bar.offsetWidth; bar.classList.add(delta[k]>0?'flash-up':'flash-down'); }
+    bar.classList.toggle('low', k==='food'&&state.food<=18);
+  }
+  const p=$('portrait'), m=$('moodText');
+  let mood='ok',txt='神光湛然';
+  if(state.food<20){mood='starving';txt='形銷骨立';} else if(state.food<40){mood='hungry';txt='面有菜色';} else if(state.food<70){mood='ok';txt='尚可支撐';}
+  p.dataset.mood=mood; m.textContent=txt;
+}
+
+/* log */
+function addLog(text,type){ const l=$('logList'); const e=document.createElement('div'); e.className='log-entry '+(type||''); e.innerHTML='<span class="ls">記</span>'+text; l.prepend(e); while(l.children.length>30) l.removeChild(l.lastChild); }
+
+/* floating feedback */
+function spawnDeltas(eff,btn){
+  const r=btn.getBoundingClientRect(); const fb=document.createElement('div'); fb.className='float-fb';
+  let html=''; for(const k in eff){ if(!eff[k])continue; const up=eff[k]>0; html+=`<span class="line ${up?'up':'down'}">${NAME[k]||k} ${up?'+':''}${eff[k]}</span>`; }
+  fb.innerHTML=html; fb.style.left=(r.left+r.width/2-40)+'px'; fb.style.top=(r.top-6)+'px';
+  document.body.appendChild(fb); setTimeout(()=>fb.remove(),1300);
+}
+
+/* ============ RENDER ============ */
+function renderIntro(){
+  phase='game'; locked=false;
+  $('hdrMonth').textContent='乾隆五年 · 上元前夜'; $('hdrSub').textContent='距陰司大計 · 十二月';
+  $('evTag').textContent='楔子'; $('evTitle').textContent='你便是顧某';
+  $('evText').innerHTML=`你是顧某，錢塘邑生，張望齡的幼年同窗。歿後，蒙陰司授為本處土地。<br><br>官職小，地方清苦，你又素講操守——不肯擅受鬼詞、濫作威福。於是，你開始挨餓。<br><br>撐過一年十二個月，等那場<span class="hl">陰司大計</span>。是清是濁，是飽是餓，皆在你一念之間。`;
+  const cl=$('choiceList'); cl.innerHTML='';
+  const b=document.createElement('button'); b.className='choice';
+  b.innerHTML=`<span class="c-num">壹</span><span class="c-label">升座視事，權掌土地祠</span><div class="c-tags"><span class="tag flag">開卷</span></div>`;
+  b.onclick=()=>{ if(locked)return; locked=true; Snd.pluck(); startMonth(0); };
+  cl.appendChild(b);
+  $('resultArea').innerHTML='';
+  restartCard(); updateDots();
+}
+
+function restartCard(){ const c=$('eventCard'); c.classList.remove('unroll'); void c.offsetWidth; c.classList.add('unroll'); }
+
+function startMonth(i){
+  veil(MONTHS[i], `乾隆五年 · 第${i+1}個月`, ()=>renderEvent(i));
+}
+
+function renderEvent(i){
+  phase='game'; locked=false; state.month=i;
+  const ev=EVENTS[i];
+  $('hdrMonth').textContent=`乾隆五年 · ${MONTHS[i]}`;
+  $('hdrSub').textContent=`距陰司大計 · ${11-i} 個月`;
+  $('evTag').textContent=MONTHS[i];
+  $('evTitle').textContent=ev.title;
+  $('evText').innerHTML=resolve(ev.text,state);
+  const choices=resolve(ev.choices,state);
+  const cl=$('choiceList'); cl.innerHTML=''; $('resultArea').innerHTML='';
+  const nums=['壹','貳','參','肆'];
+  choices.forEach((ch,idx)=>{
+    const eff=resolve(ch.eff,state);
+    const b=document.createElement('button'); b.className='choice';
+    let tags=''; for(const k in eff){ if(!eff[k])continue; const up=eff[k]>0; tags+=`<span class="tag ${up?'up':'down'}">${NAME[k]||k} ${up?'+':''}${eff[k]}</span>`; }
+    if(ch.set){ const sf=resolve(ch.set,state); if(sf&&Object.keys(sf).length) tags+=`<span class="tag flag">結緣</span>`; }
+    b.innerHTML=`<span class="c-num">${nums[idx]}</span><span class="c-label">${ch.label}</span><div class="c-tags">${tags}</div>`;
+    b.onclick=()=>choose(b,ch);
+    cl.appendChild(b);
+  });
+  restartCard(); updateDots();
+}
+
+function choose(btn,ch){
+  if(locked)return; locked=true; Snd.pluck();
+  const eff=resolve(ch.eff,state);
+  const res=resolve(ch.result,state);
+  const setf=ch.set? resolve(ch.set,state):null;
+  // apply
+  for(const k in eff){ state[k]=(state[k]||0)+eff[k]; }
+  clampAll(state);
+  if(setf) Object.assign(state.flags,setf);
+  // dead check
+  if(state.food<=0){ state.food=0; state.dead='starve'; }
+  else if(state.integrity<=0){ state.integrity=0; state.dead='dismiss'; }
+  // feedback
+  spawnDeltas(eff,btn); updateBars(eff);
+  if((eff.food||0)<=-12||(eff.integrity||0)<=-12){ document.body.classList.remove('jolt'); void document.body.offsetWidth; document.body.classList.add('jolt'); }
+  // log + result
+  addLog(`<b>${MONTHS[state.month]}·${EVENTS[state.month].title}</b>：${ch.label}`,'story');
+  // disable choices
+  [...$('choiceList').children].forEach(c=>{c.style.opacity=c===btn?'1':'.4'; c.style.pointerEvents='none';});
+  const ra=$('resultArea');
+  ra.innerHTML=`<div class="result-box"><div class="r-label">判 · 此月行止</div><p>${res}</p></div>
+    <div class="continue-row"><button class="btn-seal" id="continueBtn">${state.dead?'觀後果 →':'繼續 →'}</button></div>`;
+  $('continueBtn').onclick=()=>{ locked=false; onContinue(); };
+}
+
+function upkeep(){
+  const s=state; const lines=[];
+  if(s.people>=60){ s.food+=8; lines.push('百姓感念，自發獻香（飽食＋8）'); }
+  if(s.ghost>=70){ s.people=clamp(s.people-4); lines.push('鬼棍流言四起（民心−4）'); }
+  s.food-=7; lines.push('香消火冷，飢腸又鳴（飽食−7）');
+  clampAll(s);
+  addLog('是月：'+lines.join('；')+'。','dim');
+  updateBars({food:-7});
+  if(s.food<=0){ s.food=0; s.dead='starve'; }
+  else if(s.integrity<=0){ s.integrity=0; s.dead='dismiss'; }
+}
+
+function onContinue(){
+  if(state.dead){ veil('大計未至','香盡燈殘', ()=>showEnding(state.dead)); return; }
+  upkeep(); updateBars();
+  if(state.dead){ veil('大計未至','香盡燈殘', ()=>showEnding(state.dead)); return; }
+  if(state.month>=EVENTS.length-1){ veil('臘月','陰司大計', ()=>showEnding(computeEnding(state))); }
+  else { state.month++; startMonth(state.month); }
+}
+
+function computeEnding(s){
+  if(s.ghost>=70) return 'framed';
+  if(s.integrity>=70) return 'excellent';
+  if(s.social>=8 && s.food>=30) return 'promote';
+  return 'stay';
+}
+
+/* ============ ENDING ============ */
+function showEnding(key){
+  phase='end';
+  const e=ENDINGS[key];
+  $('endTitle').textContent=e.title;
+  $('endRank').textContent=`六種結局 · ${e.rank}`;
+  $('endText').textContent=e.text(state);
+  const q=$('endQuote'); if(e.quote){ q.style.display='block'; q.textContent='「'+e.quote+'」'; } else q.style.display='none';
+  const sc=$('endSealChar'); sc.textContent=e.seal;
+  $('endStats').innerHTML=[
+    ['飽食',state.food],['操守',state.integrity],['民心',state.people],['鬼棍',state.ghost]
+  ].map(([k,v])=>`<div class="end-stat"><div class="v">${v}</div><div class="k">${k}</div></div>`).join('')
+   +`<div class="end-stat"><div class="v">${state.month+1}</div><div class="k">在任月</div></div>`
+   +`<div class="end-stat"><div class="v">${state.social}</div><div class="k">應酬</div></div>`;
+  const deeds=[];
+  if(state.flags.girl)deeds.push('護貞女');
+  if(state.flags.zhang)deeds.push('卻饋金');
+  if(state.flags.investigated)deeds.push('察棍惡');
+  if(state.flags.cleared)deeds.push('雪冤誣');
+  if(state.flags.plague)deeds.push('施疫方');
+  if(state.flags.rebuked)deeds.push('斥關說');
+  $('endDeeds').innerHTML=deeds.length? deeds.map(d=>`<span class="deed">${d}</span>`).join('') : '<span class="deed" style="background:rgba(120,90,40,.12);color:var(--ink-soft)">無特別事跡</span>';
+  showScreen('end'); updateDots();
+  Snd.gong();
+  const seal=$('endSeal'); seal.classList.remove('go'); void seal.offsetWidth;
+  setTimeout(()=>{ seal.classList.add('go'); Snd.stamp(); },420);
+}
+
+/* ============ VEIL ============ */
+let veilTimer=null;
+function veil(char,sub,cb){
+  $('veilChar').textContent=char; $('veilSub').textContent=sub;
+  $('veilNum').textContent=`第 ${state.month+1} 月 ／ 共 十二月`;
+  const v=$('veil'); v.classList.add('show'); Snd.gong();
+  clearTimeout(veilTimer);
+  veilTimer=setTimeout(()=>{ v.classList.remove('show'); cb&&cb(); },1150);
+}
+
+/* ============ EVENTS / INIT ============ */
+$('btnStart').onclick=()=>{ Snd.ensure(); Snd.pluck(); state=newState(); buildDots(); updateBars(); $('logList').innerHTML=''; showScreen('game'); renderIntro(); };
+$('btnRetry').onclick=()=>{ Snd.pluck(); state=newState(); buildDots(); updateBars(); $('logList').innerHTML=''; showScreen('game'); renderIntro(); };
+$('btnBack').onclick=()=>{ Snd.pluck(); showScreen('title'); phase='title'; };
+$('sndBtn').onclick=function(){ Snd.ensure(); Snd.on=!Snd.on; this.classList.toggle('off',!Snd.on); if(Snd.on)Snd.pluck(); };
+
+addEventListener('keydown',e=>{
+  if(phase!=='game')return;
+  const btns=[...$('choiceList').querySelectorAll('.choice')].filter(b=>b.style.pointerEvents!=='none');
+  if(e.key>='1'&&e.key<='4'&&btns[+e.key-1]) btns[+e.key-1].click();
+  if(e.key==='Enter'){ const c=$('continueBtn'); if(c)c.click(); }
+});
+
+/* scroll story to start (right edge for vertical-rl) */
+addEventListener('load',()=>{ const s=$('storyText'); if(getComputedStyle(s).writingMode.includes('vertical')){ s.scrollLeft=s.scrollWidth; } });
+</script>
+</body>
+</html>
